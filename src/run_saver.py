@@ -40,6 +40,7 @@ class RunSaver:
       os.system(f'mkdir ./runs/{self.new_dir_name}')
       os.system(f'mkdir ./runs/{self.new_dir_name}/weights')
       os.system(f'mkdir ./runs/{self.new_dir_name}/checkpoints')
+      os.system(f'mkdir ./runs/{self.new_dir_name}/tensorboard')
       os.system(f'touch ./runs/{self.new_dir_name}/log.txt')
       
       self.logger = TrainLogger(f'./runs/{self.new_dir_name}/log.txt')
@@ -120,6 +121,7 @@ class RunSaver:
           state_dict (dict): A dictionary which consist of model, optimizer, ... states
        """
        torch.save(state_dict, f'./runs/{self.new_dir_name}/checkpoints/checkpoint.pth')
+
       
       
       

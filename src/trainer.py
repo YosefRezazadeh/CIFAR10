@@ -4,6 +4,7 @@ from torcheval.metrics import MulticlassAccuracy, Mean
 from tqdm import tqdm
 from .utilities import get_device, sum_squard_weights, get_metric_value, evaluate
 from .run_saver import RunSaver
+from torch.utils.tensorboard import SummaryWriter
 
 class Trainer:
    """
@@ -52,8 +53,13 @@ class Trainer:
       saver.prepare_new_train_save()
       saver.logger.write_train_info(desc=save_config['log']['desc'])
       log_step = save_config['log']['log_step']
+      use_tensorboard = save_config['log']['tensorboard']
       saver.logger.write_header('Train')
       
+      # initialize tensorboard writer
+      if use_tensorboard:
+         writer = SummaryWriter(f'./runs/{saver.new_dir_name}/tensorboard/')
+
       image_save_per_batch = save_config['train_batch_save']['samples']
       batches_to_save = save_config['train_batch_save']['batches_to_save']
       saved_batches = 0
@@ -78,7 +84,8 @@ class Trainer:
       best_accuracy_train = 0 
       best_accuracy_val = 0
       log_skip = 0
-   
+      
+      iterations = 0
       # Train loop
       for epoch in range(epochs) :
          self.model.train()
@@ -166,7 +173,19 @@ class Trainer:
                         'val accuracy' : get_metric_value(val_accuracy, device),
                         'lr': self.scheduler.get_last_lr()[0]
                     })
-                                
+                    
+
+            # write in tensorboard
+            if use_tensorboard:
+               writer.add_scalar("Loss per Iteration", loss, iterations)
+               iterations += 1
+
+         if use_tensorboard:
+            writer.add_scalar("Loss per Epoch", loss, epoch)
+            writer.add_scalar("Validation Loss per Epoch", get_metric_value(val_loss, device), epoch)
+            writer.add_scalar("Train Accuracy per Epoch", get_metric_value(train_accuracy, device), epoch)
+            writer.add_scalar("Validation Accuracy per Epoch", get_metric_value(val_accuracy, device), epoch)
+
          # save best and last
          if train_accuracy.compute() > best_accuracy_train :
              saver.save_model(self.model, 'best_train')

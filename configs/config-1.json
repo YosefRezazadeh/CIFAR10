@@ -61,7 +61,8 @@
     "save_config" : {
         "log" : {
             "desc" : "MobilenetV2 with [4,5,4]. [32,64,128]",
-            "log_step" : 100
+            "log_step" : 100,
+            "tensorboard" : true
         },
         "train_batch_save" : {
             "samples" : 49,
