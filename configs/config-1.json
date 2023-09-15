@@ -1,0 +1,71 @@
+{
+    "model_config" : {
+        "model" : "mobilenet-v2",
+        "architect" : [4,5,4],
+        "filters" : [32,64,128],
+        "initializer_config" : {
+            "initilizer" : "kaiming_uniform",
+            "mode" : "fan_in",
+            "gain" : 1.0
+        }, 
+        "activation_function" : "leaky_relu",
+        "activation_function_negative_slope" : 0.1,
+        "use_bias" : false
+    },
+    "train_config" : {
+        "epochs" : 120,
+        "device" : "auto",
+        "data_config" : {
+            "dataset_path" : "../cifar-10-python/",
+            "batch_size" : 128,
+            "data_split" : 45000,
+            "data_augmentation" : {
+                "color" : {
+                    "use" : false,
+                    "brightness" : 0.3,
+                    "contrast" : 0,
+                    "saturation" : 0,
+                    "hue" : 0
+                },
+                "pad" : {
+                    "use" : true,
+                    "padding" : 4
+                },
+                "hflip" : {
+                    "use" : true,
+                    "probability" : 0.5
+                },
+                "crop" : {
+                    "use" : true,
+                    "size" : 32
+                }
+            }
+        },
+        "optimizer_config" : {
+            "optimzer" : "SGD",
+            "momentum" : 0.9,
+            "weight_decay" : 1e-4,
+            "initial_lr" : 0.1,
+            "beta_1" : 0.9,
+            "beta_2" : 0.999
+        },
+        "resume" : {
+            "use" : false,
+            "checkpoint_path" : "./runs/train-27/checkpoints/checkpoint.pth"
+        }
+    },
+    "evaluation_config" : {
+        "batch_size" : 128,
+        "device" : "auto"
+    },
+    "save_config" : {
+        "log" : {
+            "desc" : "MobilenetV2 with [4,5,4]. [32,64,128]",
+            "log_step" : 100
+        },
+        "train_batch_save" : {
+            "samples" : 49,
+            "batches_to_save" : 3
+        }
+    }
+}
